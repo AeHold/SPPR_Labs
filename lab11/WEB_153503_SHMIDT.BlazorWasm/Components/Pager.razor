@@ -1,0 +1,47 @@
+﻿<nav aria-label="Page navigation example">
+	<ul class="pagination">
+		<li class="page-item">
+			<a class="page-link" disabled="@IsFirstPage" @onclick="async () => await GoToPageAsync(CurrentPage - 1)">
+				Назад
+			</a>
+		</li>
+		@foreach (var pageN in Enumerable.Range(1, TotalPages))
+		{
+			<li class="page-item @(pageN == CurrentPage ? "active" : "")">
+				<a class="page-link" @onclick="async () => await GoToPageAsync(pageN)">@pageN</a>
+			</li>
+		}
+		<li class="page-item">
+			<a class="page-link" disabled="@IsLastPage" @onclick=" async () => await GoToPageAsync(CurrentPage + 1)">
+				Вперед
+			</a>
+		</li>
+	</ul>
+</nav>
+
+@code {
+	[Inject]
+	public IDataService DataService { get; set; }
+
+	[Parameter]
+	public int CurrentPage { get; set; }
+
+	[Parameter]
+	public int TotalPages { get; set; }
+
+	[Parameter]
+	public string? Type { get; set; }
+
+	private bool IsFirstPage => CurrentPage == 1;
+	private bool IsLastPage => CurrentPage == TotalPages;
+
+	private async Task GoToPageAsync(int page)
+	{
+		if (page >= 1 && page <= TotalPages)
+		{
+			await DataService.GetCocktailListAsync(Type, page);
+			CurrentPage = DataService.CurrentPage;
+			TotalPages = DataService.TotalPages;
+		}
+	}
+}

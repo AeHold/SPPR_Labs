@@ -1,0 +1,73 @@
+﻿@using WEB_153503_SHMIDT.Domain.Models
+@model ListModel<Cocktail>
+
+@{
+    ViewData["Title"] = "Cocktails";
+
+    var request = ViewContext.HttpContext.Request;
+    //var returnUrl = request.Path + request.QueryString.ToUriComponent();
+
+    var currentType = ViewData["currentType"] as CocktailType;
+    var types = ViewData["types"] as IEnumerable<CocktailType>;
+
+    int prev = Model.CurrentPage == 1 ? 1 : Model.CurrentPage - 1;
+    int next = Model.CurrentPage == Model.TotalPages ? Model.TotalPages : Model.CurrentPage + 1;
+}
+
+<h1>Cocktails</h1>
+
+<h2>@currentType?.Name</h2>
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        Типы коктейлей
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-cocktailTypeNormalized="">Все</a></li>
+        @foreach (var item in types)
+        {
+            <li>
+                <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-cocktailTypeNormalized="@item.NormalizedName">
+                    @item.Name
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+<br />
+<br />
+
+<div class="container">
+    <div class="row" id="partial">
+        <partial name="_ProductIndexPartial"
+                 model="new { Model.Items, Model.CurrentPage,
+                              Model.TotalPages, CocktailTypeNormalized = currentType?.NormalizedName }" />
+    </div>
+</div>
+
+<script>
+
+    console.log("ты тут ?")
+
+    function onPartial() {
+        event.preventDefault();
+        console.log("сюда");
+        const url = event.target.href;
+        console.log(url);
+        $.get(url, function (data) {
+            $('#partial').html(data);
+        });
+    }
+
+    //$('a.page-link').click((e) => {
+    //    e.preventDefault();
+    //    console.log("сюда")
+    //    const url = e.target.href;
+    //    console.log(url);
+    //    $.get(url, (data) => {
+    //        $('#partial').html(data);
+    //    });
+    //});
+</script>
+

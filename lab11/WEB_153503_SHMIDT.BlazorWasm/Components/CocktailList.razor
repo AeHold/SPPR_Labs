@@ -1,0 +1,47 @@
+﻿@inject IDataService DataService
+@implements IDisposable
+
+<h1>Cocktails</h1>
+
+@if (DataService.CocktailList is null || !DataService.Success)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var cocktail in DataService.CocktailList!)
+			{
+				<tr>
+					<td>@cocktail.Name</td>
+					<td>
+						<a class="btn btn-info" @onclick="() => CocktailSelected.Invoke(cocktail.Id)"> <i class="fa-solid fa-magnifying-glass"></i> Подробно</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+
+@code {
+	[Parameter]
+	public Action<int> CocktailSelected { get; set; }
+
+	protected override void OnInitialized()
+	{
+		DataService.DataChanged += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		DataService.DataChanged -= StateHasChanged;
+	}
+
+}

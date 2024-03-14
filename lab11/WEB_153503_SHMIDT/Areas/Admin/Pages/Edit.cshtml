@@ -1,0 +1,59 @@
+﻿@page
+@using WEB_153503_SHMIDT.Services.CocktailTypeService;
+@inject ICocktailTypeService cocktailTypeService
+@model WEB_153503_SHMIDT.Areas.Admin.Pages.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+
+    var response = await cocktailTypeService.GetCocktailTypeListAsync();
+    var types = new SelectList(response.Data ?? new(), "Id", "Name");
+
+}
+
+<h1>Edit</h1>
+
+<h4>Cocktail</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">   
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Cocktail.Id" />
+            <input type="hidden" asp-for="Cocktail.Path" />
+            <div class="form-group">
+                <label asp-for="Cocktail.Name" class="control-label"></label>
+                <input asp-for="Cocktail.Name" class="form-control" />
+                <span asp-validation-for="Cocktail.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cocktail.Type" class="control-label"></label>
+                <select asp-for="Cocktail.TypeId" class="form-control" asp-items=@types></select>
+                <span asp-validation-for="Cocktail.Type" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cocktail.Description" class="control-label"></label>
+                <input asp-for="Cocktail.Description" class="form-control" />
+                <span asp-validation-for="Cocktail.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Cocktail.Price" class="control-label"></label>
+                <input asp-for="Cocktail.Price" class="form-control" />
+                <span asp-validation-for="Cocktail.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input asp-for="Image" name="Image" type="file" class="form-control">
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-primary" type="submit" value="Save" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-warning"  asp-page="./Index">Back to List</a>
+</div>
+

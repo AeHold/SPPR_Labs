@@ -1,0 +1,39 @@
+﻿@page "/catalog"
+@page "/catalog/{type}"
+@attribute [Authorize]
+@using WEB_153503_SHMIDT.BlazorWasm.Components
+@using WEB_153503_SHMIDT.Domain.Entities;
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Cocktails</PageTitle>
+
+<TypeSelector SelectedType="@SelectedName" />
+<CocktailList CocktailSelected="FindClothes" />
+<Pager Type="@Type" TotalPages="@DataService.TotalPages" CurrentPage="@DataService.CurrentPage" />
+<CocktailDetails SelectedCocktail="@SelectedCocktail"/>
+
+@code {
+	[Inject]
+	public IDataService DataService { get; set; }
+	[Parameter] public string Type { get; set; }
+	public string? SelectedName { get; set; }
+	public Cocktail? SelectedCocktail { get; set; }
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await DataService.GetCocktailListAsync(Type);
+		if (Type != null)
+			SelectedName = DataService?.Types?.FirstOrDefault(c => c.NormalizedName.Equals(Type))?.Name;
+		else SelectedName = "Все";
+	}
+
+	[Inject]
+	ILogger<Catalog> Logger { get; set; }
+
+	public void FindClothes(int id)
+	{
+		SelectedCocktail = DataService?.CocktailList?.FirstOrDefault(c => c.Id == id);
+		Logger.LogInformation($"<------ FindClothes called ------> ({SelectedCocktail?.Name})");
+		StateHasChanged();
+	}
+}
